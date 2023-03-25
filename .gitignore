@@ -8,7 +8,9 @@
 [Ll]ocal
 [Ss]cripts
 main/ignore
+main/pyxel_examples
 pyvenv.cfg
 .venv
 pip-selfcheck.json
 setting.json
+__pycache__
