@@ -5,10 +5,8 @@ from BDFRenderer import BDFRenderer
 #from copy import deepcopy as dc
 
 font_path1 = "assets/misaki_gothic.bdf"
-bdf1 = BDFRenderer(font_path1)
 
 #pyuni = PyxelUnicode(basedir+"/font/misaki_ttf/misaki_gothic.ttf", original_size=8)
-
 
 num2item = {(0,1):"海", (0,2):"平地",(0,3):"森", (0,4):"山"}
         
@@ -23,7 +21,8 @@ class App:
         self.height = 148
         pyxel.init(self.width, self.height, fps=60, title="map_and_cursor")
 
-        pyxel.load("assets/mr.pyxres")
+        pyxel.load("assets/map.pyxres")
+        self.bdf1 = BDFRenderer(font_path1)
 
         self.c_x = 0
         self.c_y = 0
@@ -107,7 +106,7 @@ class App:
         xy = self.cursor.coordinate()
         pyxel.text(self.c_x + 96, self.c_y + self.height-18, f'({xy[0]}, {xy[1]})', 0)
         map_item_tpl = pyxel.tilemap(1).pget(xy[0], xy[1])
-        bdf1.draw_text(self.c_x + 100, self.c_y + self.height-10, num2item[map_item_tpl], color=0)
+        self.bdf1.draw_text(self.c_x + 100, self.c_y + self.height-10, num2item[map_item_tpl], color=0)
         #pyuni.text(self.c_x + 100, self.c_y + self.height-10, num2item[map_item_tpl], color=0)
 
         #pyxel.rect(self.px, self.py, 5, 5, 6)
