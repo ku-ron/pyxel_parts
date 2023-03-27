@@ -358,7 +358,6 @@ class App:
         y, x = self.minimap.shape
         xy = self.cursor.coordinate()
 
-        print(xy[0]*8 - c_x)
         if xy[0]*8 - c_x < (self.width / 2):
             pyxel.rect(c_x + self.width - 51, c_y + 1, 50, 34, 10)
             for i in range(y):
