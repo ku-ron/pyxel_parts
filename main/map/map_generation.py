@@ -9,6 +9,7 @@ font_path1 = "assets/misaki_gothic.bdf"
 #pyuni = PyxelUnicode(basedir+"/font/misaki_ttf/misaki_gothic.ttf", original_size=8)
 
 num2item = {(0,1):"海", (0,2):"平地",(0,3):"森", (0,4):"山"}
+num2color = {(0,1):12, (0,2):11,(0,3):3, (0,4):4}
         
 c_list2 = [{"name":"sea", "r_range":[0.0,0.20], "color":(0,1)},   # dodgerblue
            {"name":"plain", "r_range":[0.20,0.45], "color":(0,2)},  # springgreen
@@ -309,8 +310,9 @@ class App:
 
         self.msize_x = 48
         self.msize_y = 32
+        self.minimap = np.zeros([self.msize_x, self.msize_y],dtype=int)
         arr = create_middle_map(self.msize_x,self.msize_y,15,kp_base=2)
-        set_color_map(arr, c_list2)
+        set_color_map(self, arr, c_list2)
 
         self.cursor = Cursor(lim_x=self.msize_x * 8, lim_y=self.msize_y*8)
 
@@ -319,7 +321,7 @@ class App:
     def reset(self):
         #self.cursor = Cursor(lim_x=256, lim_y=128)
         arr = create_middle_map(48,32,15,kp_base=2)
-        set_color_map(arr, c_list2)
+        set_color_map(self, arr, c_list2)
         # self.px = 10
         # self.py = 10
         # pyxel.rect(self.px, self.py, 5, 5, 6)
@@ -351,6 +353,24 @@ class App:
         pyxel.blt(16, self.height-16, 0, 0, 32, 16, 16)
         pyxel.blt(32, self.height-16, 0, 0, 64, 16, 16)
 
+    def draw_minimap(self, c_x, c_y):
+        #pyxel.rect(self.width - 50, self.height - 34, 48, 32,0)
+        y, x = self.minimap.shape
+        xy = self.cursor.coordinate()
+
+        print(xy[0]*8 - c_x)
+        if xy[0]*8 - c_x < (self.width / 2):
+            pyxel.rect(c_x + self.width - 51, c_y + 1, 50, 34, 10)
+            for i in range(y):
+                for j in range(x):
+                    pyxel.pset(c_x + i + self.width - 50, c_y + j + 2, self.minimap[i,j])
+            pyxel.pset(c_x + xy[0] + self.width - 50, c_y + xy[1] + 2,7)
+        else:
+            pyxel.rect(c_x + 1, c_y + 1, 50, 34, 10)
+            for i in range(y):
+                for j in range(x):
+                    pyxel.pset(c_x + i + 2 , c_y + j + 2, self.minimap[i,j])
+            pyxel.pset(c_x + xy[0] + 2, c_y + xy[1] + 2, 7)
 
     def draw(self):
         # クリア
@@ -374,6 +394,9 @@ class App:
  
         # マップの表示
         pyxel.bltm(0, 0, 1, 0, 0, 48*8, 32*8, 0)
+
+        # ミニマップの表示
+        self.draw_minimap(self.c_x, self.c_y)
 
        # 下領域の描画
         pyxel.rect(self.c_x, self.c_y + self.height -20, self.width, 20, 7)
@@ -422,15 +445,16 @@ def create_middle_map(y, x, grad, kp_base=6):
 
 
 
-def set_color_map(arr, c_list):
+def set_color_map(self, arr, c_list):
     y, x = arr.shape
-    #cmap = np.zeros([y,x,3], dtype=int)
+    cmap = np.zeros([y,x], dtype=int)
     
     for i in range(y):
         for j in range(x):
             for c in c_list:
                 if c["r_range"][0] <= arr[i,j] < c["r_range"][1]:
-                    #cmap[i,j] = c["color"]
+                    cmap[i,j] = num2color[c["color"]]
                     pyxel.tilemap(1).pset(i, j, c["color"])
 
+    self.minimap = cmap
 App()
